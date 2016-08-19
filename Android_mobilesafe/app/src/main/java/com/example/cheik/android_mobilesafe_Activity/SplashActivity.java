@@ -4,7 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.nfc.Tag;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.DialogPreference;
@@ -19,10 +21,15 @@ import android.widget.TextView;
 import com.example.cheik.android_mobilesafe.R;
 import com.example.cheik.android_mobilesafe_Utils.StreamUtils;
 import com.example.cheik.android_mobilesafe_Utils.ToastUtil;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -80,7 +87,51 @@ public class SplashActivity extends AppCompatActivity {
     };
 
     private void downloadApk() {
+        //apk下载地址,放置apk 的所有路径
+        //1,判断SD卡是否可以
+        Log.i(tag,"downloadApk");
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+            //2,获取sd路径
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + File.separator+"mobilesafe.apk";
+            //3,发送请求,获取apk,并放置到指定的位置
+            HttpUtils httpUtils = new HttpUtils();
+            //4,发送请求,传递参数(下载位置,下载应用放置位置)
+            httpUtils.download("http://www.gwfx.com/download/GTS2.apk?v=20160803", path, new RequestCallBack<File>() {
+                @Override
+                public void onSuccess(ResponseInfo<File> responseInfo) {
+                    //下载成功(下载过后的放置在SD卡中的apk)
+                    Log.i(tag,"下载成功");
+                    File file = responseInfo.result;
+                    //提示用户安装
+                    installApk(file);
+                }
+
+                @Override
+                public void onFailure(HttpException e, String s) {
+                    //下载失败
+                    Log.i(tag,"下载失败");
+                    enterHome();
+                }
+
+                @Override
+                public void onStart(){
+                    Log.i(tag,"刚刚下载");
+                    super.onStart();
+                }
+
+                @Override
+                public void onLoading(long total, long current, boolean isUploading) {
+                   Log.i(tag,"下载中....."+"total="+total+"current="+current);
+                    super.onLoading(total, current, isUploading);
+                }
+            });
+        }
     }
+
+    private void installApk(File file) {
+    }
+
     private void enterHome() {
         Intent intent = new Intent(this,HomeActivity.class);
         startActivity(intent);

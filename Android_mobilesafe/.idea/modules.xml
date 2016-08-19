@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Android_mobilesafe.iml" filepath="$PROJECT_DIR$/Android_mobilesafe.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xUtils-2.6.14/xUtils-2.6.14.iml" filepath="$PROJECT_DIR$/xUtils-2.6.14/xUtils-2.6.14.iml" />
     </modules>
   </component>
 </project>
